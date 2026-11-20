@@ -1,0 +1,155 @@
+<div class="page-container">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-title">OrderCraft</span>
+      <span class="badge-role">Admin</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/admin" class="nav-link">Dashboard</a>
+      <a routerLink="/customers" class="nav-link">Customers</a>
+      <a routerLink="/products" class="nav-link">Products</a>
+      <a routerLink="/materials" class="nav-link">Materials</a>
+      <a routerLink="/suppliers" class="nav-link active">Suppliers</a>
+      <a routerLink="/inventory" class="nav-link">Inventory</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <div>
+        <h1>Suppliers Management</h1>
+        <p class="subtitle">Manage vendor records, contact persons, corporate details, and communication info.</p>
+      </div>
+      <a routerLink="/admin" class="btn-secondary">&larr; Back to Dashboard</a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <!-- Add Supplier Form -->
+    <div class="card form-card">
+      <h2>Add New Supplier</h2>
+      <form (ngSubmit)="addSupplier()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="company">Company / Vendor Name *</label>
+            <input
+              id="company"
+              type="text"
+              name="company"
+              placeholder="e.g. Acme Industrial Supplies"
+              [(ngModel)]="newSupplier.company"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="supplierName">Contact Person *</label>
+            <input
+              id="supplierName"
+              type="text"
+              name="supplierName"
+              placeholder="e.g. John Doe"
+              [(ngModel)]="newSupplier.supplierName"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="email">Email *</label>
+            <input
+              id="email"
+              type="email"
+              name="email"
+              placeholder="e.g. contact@acme.com"
+              [(ngModel)]="newSupplier.email"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="phone">Phone *</label>
+            <input
+              id="phone"
+              type="text"
+              name="phone"
+              placeholder="e.g. +1 555-0199"
+              [(ngModel)]="newSupplier.phone"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address *</label>
+          <input
+            id="address"
+            type="text"
+            name="address"
+            placeholder="e.g. 100 Industrial Parkway, Suite 400"
+            [(ngModel)]="newSupplier.address"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Adding...' : 'Add Supplier' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Suppliers Table -->
+    <div class="card table-card">
+      <div class="table-header">
+        <h2>Suppliers List</h2>
+        <button class="btn-sm" (click)="loadSuppliers()" [disabled]="isLoading">
+          {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Company</th>
+            <th>Contact Person</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>Address</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (supplier of suppliers; track supplier.id) {
+            <tr>
+              <td>{{ supplier.id }}</td>
+              <td><strong>{{ supplier.company }}</strong></td>
+              <td>{{ supplier.supplierName }}</td>
+              <td>{{ supplier.email }}</td>
+              <td>{{ supplier.phone }}</td>
+              <td>{{ supplier.address }}</td>
+              <td>
+                <button class="btn-danger btn-sm" (click)="deleteSupplier(supplier.id)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-message">
+                {{ isLoading ? 'Loading suppliers...' : 'No suppliers found. Add your first supplier above.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

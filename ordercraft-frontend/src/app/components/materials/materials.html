@@ -1,0 +1,143 @@
+<div class="page-container">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-title">OrderCraft</span>
+      <span class="badge-role">Admin</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/admin" class="nav-link">Dashboard</a>
+      <a routerLink="/customers" class="nav-link">Customers</a>
+      <a routerLink="/products" class="nav-link">Products</a>
+      <a routerLink="/materials" class="nav-link active">Materials</a>
+      <a routerLink="/suppliers" class="nav-link">Suppliers</a>
+      <a routerLink="/inventory" class="nav-link">Inventory</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <div>
+        <h1>Raw Materials Management</h1>
+        <p class="subtitle">Track raw materials catalog, specifications, units, and standard costs.</p>
+      </div>
+      <a routerLink="/admin" class="btn-secondary">&larr; Back to Dashboard</a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <!-- Add Material Form -->
+    <div class="card form-card">
+      <h2>Add New Material</h2>
+      <form (ngSubmit)="addMaterial()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="materialName">Material Name *</label>
+            <input
+              id="materialName"
+              type="text"
+              name="materialName"
+              placeholder="e.g. Stainless Steel Sheet"
+              [(ngModel)]="newMaterial.materialName"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="unit">Unit *</label>
+            <input
+              id="unit"
+              type="text"
+              name="unit"
+              placeholder="e.g. kg, meters, pcs"
+              [(ngModel)]="newMaterial.unit"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="unitPrice">Unit Price ($) *</label>
+            <input
+              id="unitPrice"
+              type="number"
+              step="0.01"
+              min="0"
+              name="unitPrice"
+              placeholder="0.00"
+              [(ngModel)]="newMaterial.unitPrice"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="description">Description *</label>
+          <input
+            id="description"
+            type="text"
+            name="description"
+            placeholder="e.g. 304 Grade 2mm thickness stainless steel"
+            [(ngModel)]="newMaterial.description"
+            required
+          />
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Adding...' : 'Add Material' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Materials Table -->
+    <div class="card table-card">
+      <div class="table-header">
+        <h2>Materials List</h2>
+        <button class="btn-sm" (click)="loadMaterials()" [disabled]="isLoading">
+          {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Material Name</th>
+            <th>Description</th>
+            <th>Unit</th>
+            <th>Unit Price</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (material of materials; track material.id) {
+            <tr>
+              <td>{{ material.id }}</td>
+              <td><strong>{{ material.materialName }}</strong></td>
+              <td>{{ material.description }}</td>
+              <td><span class="unit-tag">{{ material.unit }}</span></td>
+              <td>${{ material.unitPrice | number:'1.2-2' }}</td>
+              <td>
+                <button class="btn-danger btn-sm" (click)="deleteMaterial(material.id)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="6" class="empty-message">
+                {{ isLoading ? 'Loading materials...' : 'No materials found. Add your first material above.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>

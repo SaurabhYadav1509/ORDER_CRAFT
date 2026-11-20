@@ -1,0 +1,17 @@
+# IDE
+.vscode/
+.idea/
+
+# OS
+Thumbs.db
+.DS_Store
+
+# Frontend
+ordercraft-frontend/node_modules/
+ordercraft-frontend/dist/
+ordercraft-frontend/.angular/
+
+# Backend
+Backend/target/
+Backend/error.log
+Backend/*.log

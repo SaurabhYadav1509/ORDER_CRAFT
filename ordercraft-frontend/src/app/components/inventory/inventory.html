@@ -1,0 +1,171 @@
+<div class="page-container">
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="navbar-brand">
+      <span class="brand-title">OrderCraft</span>
+      <span class="badge-role">Admin</span>
+    </div>
+
+    <nav class="nav-links">
+      <a routerLink="/admin" class="nav-link">Dashboard</a>
+      <a routerLink="/customers" class="nav-link">Customers</a>
+      <a routerLink="/products" class="nav-link">Products</a>
+      <a routerLink="/materials" class="nav-link">Materials</a>
+      <a routerLink="/suppliers" class="nav-link">Suppliers</a>
+      <a routerLink="/inventory" class="nav-link active">Inventory</a>
+    </nav>
+  </header>
+
+  <main class="main-content">
+    <div class="header-section">
+      <div>
+        <h1>Inventory Management</h1>
+        <p class="subtitle">Monitor stock quantities, units, and low-stock reorder thresholds.</p>
+      </div>
+      <a routerLink="/admin" class="btn-secondary">&larr; Back to Dashboard</a>
+    </div>
+
+    <!-- Alert Messages -->
+    @if (errorMessage) {
+      <div class="alert alert-error">{{ errorMessage }}</div>
+    }
+    @if (successMessage) {
+      <div class="alert alert-success">{{ successMessage }}</div>
+    }
+
+    <!-- Stock Status Summary Banner -->
+    <div class="summary-cards">
+      <div class="summary-card">
+        <span class="summary-label">Total Tracked Items</span>
+        <span class="summary-value">{{ inventoryItems.length }}</span>
+      </div>
+      <div class="summary-card" [class.summary-warning]="lowStockCount > 0">
+        <span class="summary-label">Low Stock Alerts</span>
+        <span class="summary-value">{{ lowStockCount }}</span>
+      </div>
+    </div>
+
+    @if (lowStockCount > 0) {
+      <div class="alert alert-warning">
+        <strong>⚠️ Warning:</strong> {{ lowStockCount }} item(s) are currently at or below their reorder level. Review the highlighted items below.
+      </div>
+    }
+
+    <!-- Add Inventory Form -->
+    <div class="card form-card">
+      <h2>Add Inventory Stock Record</h2>
+      <form (ngSubmit)="addInventory()">
+        <div class="form-grid">
+          <div class="form-group">
+            <label for="materialName">Material / Item Name *</label>
+            <input
+              id="materialName"
+              type="text"
+              name="materialName"
+              placeholder="e.g. Copper Wire Spool"
+              [(ngModel)]="newInventory.materialName"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="quantity">Current Quantity *</label>
+            <input
+              id="quantity"
+              type="number"
+              step="any"
+              min="0"
+              name="quantity"
+              placeholder="0"
+              [(ngModel)]="newInventory.quantity"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="unit">Unit *</label>
+            <input
+              id="unit"
+              type="text"
+              name="unit"
+              placeholder="e.g. kg, meters, pcs"
+              [(ngModel)]="newInventory.unit"
+              required
+            />
+          </div>
+
+          <div class="form-group">
+            <label for="reorderLevel">Reorder Level *</label>
+            <input
+              id="reorderLevel"
+              type="number"
+              step="any"
+              min="0"
+              name="reorderLevel"
+              placeholder="0"
+              [(ngModel)]="newInventory.reorderLevel"
+              required
+            />
+          </div>
+        </div>
+
+        <button type="submit" class="btn-primary" [disabled]="isSubmitting">
+          {{ isSubmitting ? 'Adding...' : 'Add Stock Record' }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Inventory Table -->
+    <div class="card table-card">
+      <div class="table-header">
+        <h2>Stock Records</h2>
+        <button class="btn-sm" (click)="loadInventory()" [disabled]="isLoading">
+          {{ isLoading ? 'Refreshing...' : 'Refresh' }}
+        </button>
+      </div>
+
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Item / Material</th>
+            <th>Quantity</th>
+            <th>Unit</th>
+            <th>Reorder Level</th>
+            <th>Stock Status</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (item of inventoryItems; track item.id) {
+            <tr [class.row-warning]="isLowStock(item)">
+              <td>{{ item.id }}</td>
+              <td><strong>{{ item.materialName }}</strong></td>
+              <td><strong>{{ item.quantity }}</strong></td>
+              <td><span class="unit-tag">{{ item.unit }}</span></td>
+              <td>{{ item.reorderLevel }}</td>
+              <td>
+                @if (isLowStock(item)) {
+                  <span class="badge badge-danger">⚠️ Low Stock ({{ item.quantity }} &le; {{ item.reorderLevel }})</span>
+                } @else {
+                  <span class="badge badge-success">&#10003; In Stock</span>
+                }
+              </td>
+              <td>
+                <button class="btn-danger btn-sm" (click)="deleteInventory(item.id)">
+                  Delete
+                </button>
+              </td>
+            </tr>
+          } @empty {
+            <tr>
+              <td colspan="7" class="empty-message">
+                {{ isLoading ? 'Loading inventory...' : 'No inventory records found. Add your first record above.' }}
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </main>
+</div>
